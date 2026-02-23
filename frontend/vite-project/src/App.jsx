@@ -12,15 +12,15 @@ export default function App() {
         <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight">Manufacturing Dashboard</h1>
-            <p className="text-slate-600 text-sm">
+            {/* <p className="text-slate-600 text-sm">
               React UI + Flask API • Orders & Inventory • Admin Monitoring
-            </p>
+            </p> */}
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="px-3 py-2 rounded-xl bg-white border shadow-sm text-sm text-slate-600">
+            {/* <div className="px-3 py-2 rounded-xl bg-white border shadow-sm text-sm text-slate-600">
               Status: <span className="font-semibold text-slate-900">Local</span>
-            </div>
+            </div> */}
           </div>
         </header>
 
@@ -36,9 +36,9 @@ export default function App() {
           </Routes>
         </main>
 
-        <footer className="mt-10 text-xs text-slate-500">
+        {/* <footer className="mt-10 text-xs text-slate-500">
           Built for Minikube/Kubernetes rolling updates demo.
-        </footer>
+        </footer> */}
       </div>
     </div>
   );
