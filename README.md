@@ -1,168 +1,159 @@
-# 🏭 Flask Manufacturing Management System (DevOps Deployment)
+# Manufacturing Application Deployment on Kubernetes
 
-A full-stack Manufacturing Management Web Application deployed on **AWS EC2 using Docker & Kubernetes (K3s)**.
-
-This project demonstrates real-world DevOps practices including containerization, orchestration, networking, and production debugging.
+**Author:** Vidhi Prajapati
+**Project No:** DO-12
+**Division:** D9 (Group 12D9)
 
 ---
 
 ## 📌 Project Overview
 
-The system helps manage manufacturing operations such as:
+This project demonstrates the end-to-end deployment of a **Manufacturing Management Web Application** using DevOps practices.
+The application is a full-stack system:
 
-* Inventory management
-* Orders tracking
-* Admin dashboard
-* User dashboard
-* Backend API integration
-* Real-time data from database
+* **Frontend:** React (Vite)
+* **Backend:** Python Flask REST API
+* **Database:** SQLite/MySQL (used by backend)
+* **Containerization:** Docker
+* **Orchestration:** Kubernetes (K3s on AWS EC2)
+* **Reverse Proxy:** Nginx
 
-The application is deployed in a production-like cloud environment instead of running only on a local machine.
+The objective of this project was to deploy a containerized manufacturing application on a Kubernetes cluster and implement a **zero-downtime rolling update deployment strategy**.
 
 ---
 
-## 🧱 Tech Stack
+## 🧱 System Architecture
 
-### Frontend
+User → AWS EC2 → Kubernetes Cluster → Nginx Reverse Proxy → Frontend → Backend → Database
 
-* React (Vite)
-* Axios
-* Tailwind CSS
+* Nginx acts as the entry point
+* `/` routes to React frontend
+* `/api` routes to Flask backend
+* Backend communicates with the database
 
-### Backend
+---
 
-* Python Flask
-* REST APIs
+## 🚀 Features
 
-### DevOps / Infrastructure
+* Containerized full-stack application
+* Kubernetes deployment and service exposure
+* Internal pod communication using Kubernetes DNS
+* Reverse proxy routing using Nginx
+* Rolling updates without downtime
+* Public access using AWS EC2
 
+---
+
+## 🛠️ Tools & Technologies
+
+* Git & GitHub
 * Docker
 * Kubernetes (K3s)
-* AWS EC2 (Ubuntu Server)
-* NodePort Networking
-* Linux Server Management
-* Git & GitHub
+* AWS EC2 (Ubuntu)
+* Nginx
+* Python Flask
+* React (Vite)
+* Axios API communication
 
 ---
 
-## ⚙️ System Architecture
+## ⚙️ Deployment Steps
 
-User Browser
-⬇
-Frontend (React – Docker Container)
-⬇
-Kubernetes Service (NodePort)
-⬇
-Backend (Flask API – Docker Container)
-⬇
-Database
+### 1. Clone Repository
 
----
+```bash
+git clone https://github.com/vidhi-1412/Python-flask.git
+cd Python-flask
+```
 
-## 🚀 Deployment Features
+### 2. Build Docker Images
 
-✔ Dockerized Flask Backend
-✔ Dockerized React Frontend
-✔ Kubernetes Deployment & Services
-✔ NodePort External Access
-✔ AWS Security Group Configuration
-✔ Production Networking Debugging
-✔ GitHub Version Control
-✔ Live Full-Stack Communication
+```bash
+docker build -t manufacturing-backend ./backend
+docker build -t manufacturing-frontend ./frontend/vite-project
+```
 
----
+### 3. Import Images into K3s
 
-## 📂 Project Structure
+```bash
+docker save manufacturing-backend -o backend.tar
+sudo k3s ctr images import backend.tar
 
-manufacturing-app/
+docker save manufacturing-frontend -o frontend.tar
+sudo k3s ctr images import frontend.tar
+```
 
-backend/ → Flask API
-frontend/ → React Vite App
-Dockerfile (backend)
-Dockerfile (frontend)
-docker-compose.yml
-k8s deployment files
+### 4. Deploy to Kubernetes
 
----
+```bash
+kubectl apply -f backend-deployment.yaml
+kubectl apply -f frontend-deployment.yaml
+kubectl apply -f services.yaml
+```
 
-## 🐳 Docker Setup
+### 5. Configure Nginx Reverse Proxy
 
-### Build Backend Image
+Nginx routes traffic inside the cluster:
 
-docker build -t backend-app ./backend
-
-### Build Frontend Image
-
-docker build -t frontend-app ./frontend
+* `/` → Frontend service
+* `/api` → Backend service
 
 ---
 
-## ☸️ Kubernetes Deployment
+## 🌐 Application Access
 
-Images are imported into the K3s cluster and deployed using Kubernetes Deployment and Service YAML files.
+After deployment the application is publicly accessible at:
 
-Services are exposed using **NodePort** to allow external access via EC2 Public IP.
-
-Example:
-
-http://<EC2-Public-IP>:30008
+```
+http://<EC2-PUBLIC-IP>:30199
+```
 
 ---
 
-## 🔧 Production Issue Solved
+## 🔄 Rolling Update (Zero Downtime Deployment)
 
-During deployment, the frontend was calling:
+The application supports rolling updates using Kubernetes:
 
-http://localhost:5000
+```bash
+kubectl set image deployment/frontend-deployment manufacturing-frontend=manufacturing-frontend:v2
+kubectl rollout status deployment/frontend-deployment
+```
 
-This works locally but fails in production because the browser tries to access its own machine.
-
-It was fixed by updating the API base URL to:
-
-http://<EC2-Public-IP>:30007/api
-
-This enabled successful communication between the React frontend and Flask backend inside Kubernetes.
+Kubernetes first creates a new pod, shifts traffic to it, and then removes the old pod.
+This ensures **no service interruption**.
 
 ---
 
-## 🧪 How to Run Locally
+## 📊 Kubernetes Commands Used
 
-### Backend
-
-cd backend
-pip install -r requirements.txt
-python app.py
-
-### Frontend
-
-cd frontend
-npm install
-npm run dev
+```bash
+kubectl get pods
+kubectl get svc
+kubectl describe deployment
+kubectl logs <pod-name>
+kubectl rollout status deployment/frontend-deployment
+```
 
 ---
 
-## 📊 DevOps Learning Outcomes
-
-This project demonstrates:
+## 🧠 Key Learnings
 
 * Containerization using Docker
-* Kubernetes orchestration
-* Linux server handling
-* Cloud deployment (AWS)
-* Debugging real production issues
-* Full-stack service communication
+* Kubernetes pod networking
+* Service exposure via NodePort
+* Reverse proxy routing
+* Debugging deployment issues
+* Production-style architecture deployment
 
 ---
 
-## 👩‍💻 Author
+## 📌 Conclusion
 
-**Vidhi Prajapati**
-
-GitHub: https://github.com/vidhi-1412
+This project successfully demonstrates a production-style DevOps deployment pipeline.
+The Manufacturing Application was containerized, deployed, and exposed publicly using Kubernetes and AWS EC2. A reverse proxy was implemented and rolling updates were achieved without downtime.
 
 ---
 
-## ⭐ Note
+## 📜 License
 
-This is a deployment-focused DevOps project.
-The objective was to deploy a full-stack application in a real cloud environment rather than only running it locally.
+This project is for educational and academic purposes.
